@@ -38,23 +38,23 @@ get_platform() {
 	machine_hardware_name="$(uname -m)"
 
 	case "$machine_hardware_name" in
-		'x86_64') local arch="amd64" ;;
-		'powerpc64le' | 'ppc64le') local arch="ppc64le" ;;
-		'aarch64') local arch="arm64" ;;
-		'armv7l') local arch="arm" ;;
-		*) local arch="$machine_hardware_name" ;;
+	'x86_64') local arch="amd64" ;;
+	'powerpc64le' | 'ppc64le') local arch="ppc64le" ;;
+	'aarch64') local arch="arm64" ;;
+	'armv7l') local arch="arm" ;;
+	*) local arch="$machine_hardware_name" ;;
 	esac
 
 	case $(uname | tr '[:upper:]' '[:lower:]') in
-		linux*)
-			echo "linux_${arch}"
-			;;
-		darwin*)
-			echo "darwin_${arch}"
-			;;
-		*)
-			fail "$(uname) is not a supported platform."
-			;;
+	linux*)
+		echo "linux_${arch}"
+		;;
+	darwin*)
+		echo "darwin_${arch}"
+		;;
+	*)
+		fail "$(uname) is not a supported platform."
+		;;
 	esac
 }
 
