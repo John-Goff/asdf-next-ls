@@ -34,7 +34,8 @@ list_all_versions() {
 }
 
 get_platform() {
-	local machine_hardware_name="$(uname -m)"
+	local machine_hardware_name
+	machine_hardware_name="$(uname -m)"
 
 	case "$machine_hardware_name" in
 		'x86_64') local arch="amd64" ;;
