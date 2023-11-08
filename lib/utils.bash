@@ -2,7 +2,6 @@
 
 set -euo pipefail
 
-# TODO: Ensure this is the correct GitHub homepage where releases can be downloaded for next-ls.
 GH_REPO="https://github.com/elixir-tools/next-ls"
 TOOL_NAME="next-ls"
 TOOL_TEST="nextls --help"
@@ -31,9 +30,31 @@ list_github_tags() {
 }
 
 list_all_versions() {
-	# TODO: Adapt this. By default we simply list the tag names from GitHub releases.
-	# Change this function if next-ls has other means of determining installable versions.
 	list_github_tags
+}
+
+get_platform() {
+	local machine_hardware_name="$(uname -m)"
+
+	case "$machine_hardware_name" in
+		'x86_64') local arch="amd64" ;;
+		'powerpc64le' | 'ppc64le') local arch="ppc64le" ;;
+		'aarch64') local arch="arm64" ;;
+		'armv7l') local arch="arm" ;;
+		*) local arch="$machine_hardware_name" ;;
+	esac
+
+	case $(uname | tr '[:upper:]' '[:lower:]') in
+		linux*)
+			echo "linux_${arch}"
+			;;
+		darwin*)
+			echo "darwin_${arch}"
+			;;
+		*)
+			fail "$(uname) is not a supported platform."
+			;;
+	esac
 }
 
 download_release() {
@@ -41,8 +62,7 @@ download_release() {
 	version="$1"
 	filename="$2"
 
-	# TODO: Adapt the release URL convention for next-ls
-	url="$GH_REPO/archive/v${version}.tar.gz"
+	url="$GH_REPO/releases/download/v${version}/next_ls_$(get_platform)"
 
 	echo "* Downloading $TOOL_NAME release $version..."
 	curl "${curl_opts[@]}" -o "$filename" -C - "$url" || fail "Could not download $url"
@@ -58,12 +78,12 @@ install_version() {
 	fi
 
 	(
-		mkdir -p "$install_path"
-		cp -r "$ASDF_DOWNLOAD_PATH"/* "$install_path"
-
-		# TODO: Assert next-ls executable exists.
 		local tool_cmd
 		tool_cmd="$(echo "$TOOL_TEST" | cut -d' ' -f1)"
+
+		mkdir -p "$install_path"
+		cp "$ASDF_DOWNLOAD_PATH/$TOOL_NAME-$version" "$install_path/$tool_cmd"
+
 		test -x "$install_path/$tool_cmd" || fail "Expected $install_path/$tool_cmd to be executable."
 
 		echo "$TOOL_NAME $version installation was successful!"
