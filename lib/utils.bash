@@ -83,6 +83,7 @@ install_version() {
 
 		mkdir -p "$install_path"
 		cp "$ASDF_DOWNLOAD_PATH/$TOOL_NAME-$version" "$install_path/$tool_cmd"
+		chmod +x "$install_path/$tool_cmd"
 
 		test -x "$install_path/$tool_cmd" || fail "Expected $install_path/$tool_cmd to be executable."
 
